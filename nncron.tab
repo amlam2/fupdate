@@ -1,0 +1,32 @@
+#CRONTAB FILE 
+# Classic crontab format:
+# Minutes Hours Days Months WeekDays Years Command
+# see 'example.tab'
+
+# Имя файла обновлений
+SET arch_fname="fbox"
+
+# =================================================================================================
+
+# Проверка каталога входящей информации и обработка файлов с именем из переменной arch_fname
+#( Update_Files
+Action:
+	SWHide   NormalPriority
+	FOR-FILES: "d:\sksdata\PRPI\os22*"
+		FILESONLY
+		FOR-FILES: "d:\inbound\%FOUND-FILENAME%\IN\%arch_fname%.*"
+			FILE-EXIST: "%FOUND-FULLPATH%"
+ 			IF
+				START-APPW: fupdate.js %FOUND-FULLPATH%
+			THEN
+		;FOR-FILES
+	;FOR-FILES
+)#
+
+# Удаление старых лог-файлов nnCron
+#( Clear_nncron_log
+RunMissed
+Time: 0 12 * * 5 *
+Action:
+	PURGE-OLD: "log\*.log" 7
+)#
